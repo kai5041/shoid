@@ -1,6 +1,4 @@
 # 所ID | A Place to Verify Your Identity
-
-所ID (ShoID) is more than a digital signature tool. It’s a secure place where identities are verified and trusted.
 Sign, verify, and protect your digital presence using both classical and post-quantum cryptography.
 
 > **NOTE**: Currently, ShoID does not comply with eIDAS or any other official standards, and is not a Trusted Service Provider.
@@ -12,8 +10,7 @@ Sign, verify, and protect your digital presence using both classical and post-qu
 
 
 ## License
-This project is licensed under the [MIT License](https://github.com/kai5041/shoid/LICENSE).
-
+This project is licensed under the [ShoID License](https://github.com/kai5041/shoid/LICENSE).
 
 ## Contact
 

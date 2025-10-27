@@ -1,99 +1,66 @@
-#include <fstream>
-#include <iostream>
-
 #include <openssl/err.h>
 #include <openssl/evp.h>
-#include <openssl/pem.h>
-#include <vector>
+
+#include <iostream>
 
 #include <shoid/ed25519.hpp>
 
 namespace shoid {
-
-int ed25519_sign(std::vector<std::string> args) {
-  if (args.size() != 3) {
-    std::cerr << "Usage: " << args[0]
-              << " <filename> <private_key.pem> <output.sig>\n";
-    return 1;
+int sign_file_ed25519(Bytes &signature, Bytes &data, Bytes &private_key) {
+  if (private_key.size() != 32) {
+    std::cerr << "Invalid private key size for Ed25519\n";
+    return -1;
   }
 
-  return __ed25519_sign(args[0], args[1], args[2]);
-}
-
-int __ed25519_sign(const std::string &filename, const std::string &keyfile,
-                   const std::string &sigfile) {
-
-  std::ifstream file(filename, std::ios::binary);
-  if (!file) {
-    std::cerr << "Cannot open file: " << filename << "\n";
-    return 1;
-  }
-  std::vector<unsigned char> data((std::istreambuf_iterator<char>(file)),
-                                  std::istreambuf_iterator<char>());
-  file.close();
-
-  FILE *f = fopen(keyfile.c_str(), "r");
-  if (!f) {
-    std::cerr << "Cannot open key file: " << keyfile << "\n";
-    return 1;
-  }
-  EVP_PKEY *pkey = PEM_read_PrivateKey(f, nullptr, nullptr, nullptr);
-  fclose(f);
+  EVP_PKEY *pkey = EVP_PKEY_new_raw_private_key(
+      EVP_PKEY_ED25519, nullptr, private_key.data(), private_key.size());
   if (!pkey) {
-    std::cerr << "Error loading private key\n";
-    ERR_print_errors_fp(stderr);
-    return 1;
+    std::cerr << "Failed to load Ed25519 private key: "
+              << ERR_error_string(ERR_get_error(), nullptr) << "\n";
+    return -1;
   }
 
-  EVP_MD_CTX *ctx = EVP_MD_CTX_new();
-  if (!ctx) {
-    std::cerr << "Failed to create context\n";
+  EVP_MD_CTX *mdctx = EVP_MD_CTX_new();
+  if (!mdctx) {
+    std::cerr << "Failed to create MD context: "
+              << ERR_error_string(ERR_get_error(), nullptr) << "\n";
     EVP_PKEY_free(pkey);
-    return 1;
+    return -1;
   }
 
-  if (EVP_DigestSignInit(ctx, nullptr, nullptr, nullptr, pkey) != 1) {
-    std::cerr << "DigestSignInit failed\n";
-    ERR_print_errors_fp(stderr);
-    EVP_MD_CTX_free(ctx);
+  if (EVP_DigestSignInit(mdctx, nullptr, nullptr, nullptr, pkey) <= 0) {
+    std::cerr << "Failed to initialize signing: "
+              << ERR_error_string(ERR_get_error(), nullptr) << "\n";
+    EVP_MD_CTX_free(mdctx);
     EVP_PKEY_free(pkey);
-    return 1;
+    return -1;
   }
 
   size_t sig_len = 0;
-  if (EVP_DigestSign(ctx, nullptr, &sig_len, data.data(), data.size()) != 1) {
-    std::cerr << "DigestSign (get length) failed\n";
-    ERR_print_errors_fp(stderr);
-    EVP_MD_CTX_free(ctx);
+  if (EVP_DigestSign(mdctx, nullptr, &sig_len, data.data(), data.size()) <= 0) {
+    std::cerr << "Failed to determine signature length: "
+              << ERR_error_string(ERR_get_error(), nullptr) << "\n";
+    EVP_MD_CTX_free(mdctx);
     EVP_PKEY_free(pkey);
-    return 1;
+    return -1;
   }
 
-  std::vector<unsigned char> signature(sig_len);
-  if (EVP_DigestSign(ctx, signature.data(), &sig_len, data.data(),
-                     data.size()) != 1) {
-    std::cerr << "DigestSign failed\n";
-    ERR_print_errors_fp(stderr);
-    EVP_MD_CTX_free(ctx);
+  signature.resize(sig_len);
+  if (EVP_DigestSign(mdctx, signature.data(), &sig_len, data.data(),
+                     data.size()) <= 0) {
+    std::cerr << "Signing failed: "
+              << ERR_error_string(ERR_get_error(), nullptr) << "\n";
+    EVP_MD_CTX_free(mdctx);
     EVP_PKEY_free(pkey);
-    return 1;
+    return -1;
   }
 
-  std::ofstream ofs(sigfile, std::ios::binary);
-  if (!ofs) {
-    std::cerr << "Cannot open output file: " << sigfile << "\n";
-    EVP_MD_CTX_free(ctx);
-    EVP_PKEY_free(pkey);
-    return 1;
-  }
-  ofs.write(reinterpret_cast<const char *>(signature.data()), sig_len);
-  ofs.close();
+  signature.resize(sig_len);
 
-  std::cout << "Signature written to " << sigfile << " (" << sig_len
-            << " bytes)\n";
-
-  EVP_MD_CTX_free(ctx);
+  EVP_MD_CTX_free(mdctx);
   EVP_PKEY_free(pkey);
+
   return 0;
 }
+
 } // namespace shoid

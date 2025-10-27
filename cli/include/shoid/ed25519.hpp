@@ -1,19 +1,11 @@
 #pragma once
 
-#include <string>
-#include <vector>
+#include <shoid/defs.hpp>
 
 namespace shoid {
 
-int ed25519_generate_keypair(std::vector<std::string> args);
-int __ed25519_generate_keypair(const std::string &output_dir);
+int generate_keypair_ed25519(Bytes &public_key, Bytes &private_key);
+int sign_file_ed25519(Bytes &signature, Bytes &data, Bytes &private_key);
+int verify_signature_ed25519(Bytes &data, Bytes &signature, Bytes &public_key);
 
-int ed25519_sign(std::vector<std::string> args);
-int __ed25519_sign(const std::string &filename, const std::string &keyfile,
-  const std::string &sigfile);
-
-int ed25519_verify(std::vector<std::string> args);
-int __ed25519_verify(const std::string &filename, const std::string &sigfile,
-  const std::string &pubkeyfile);
-
-} // namespace shoid
+}
