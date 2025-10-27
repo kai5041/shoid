@@ -7,7 +7,8 @@ SRC := $(shell find $(SRC_DIR) -type f -name '*.cpp')
 INCLUDE := $(shell find $(INCLUDE_DIR) -type f -name '*.hpp')
 
 CXX ?= g++
-CXX_FLAGS := -std=c++20 -Wall -fPIC -I$(INCLUDE_DIR)
+ARCH ?= native
+CXX_FLAGS := -std=c++20 -Wall -O3 -march=$(ARCH) -flto -funroll-loops -ffast-math -fomit-frame-pointer -I$(INCLUDE_DIR)
 LD_FLAGS := -lpthread -lcrypto
 
 LINUX_BUILD_DIR := $(BUILD_DIR)/linux
