@@ -8,8 +8,20 @@ INCLUDE := $(shell find $(INCLUDE_DIR) -type f -name '*.hpp')
 
 CXX ?= g++
 ARCH ?= native
-CXX_FLAGS := -std=c++20 -Wall -O3 -march=$(ARCH) -flto -funroll-loops -ffast-math -fomit-frame-pointer -I$(INCLUDE_DIR)
-LD_FLAGS := -lpthread -lcrypto
+CXX_FLAGS := -std=c++20 \
+             -Wall \
+             -O3 \
+             -march=$(ARCH) \
+             -flto=auto \
+             -funroll-loops \
+             -ffast-math \
+             -fomit-frame-pointer \
+             -fno-rtti \
+             -I$(INCLUDE_DIR) \
+             -I$(INCLUDE_DIR)/shoid/uWebSockets
+
+LD_FLAGS := -lpthread -lcrypto -lz -luv -L./libs -Wl,-Bstatic -luSockets -Wl,-Bdynamic
+
 
 LINUX_BUILD_DIR := $(BUILD_DIR)/linux
 WIN_BUILD_DIR   := $(BUILD_DIR)/win

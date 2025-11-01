@@ -7,11 +7,6 @@
 
 using namespace shoid;
 
-int version_command(Args &) {
-  std::cout << "ShoID v0.0.0\nRepository: https://github.com/kai5041/shoid\n";
-  return 0;
-}
-
 int main(int argc, char **argv) {
   if (argc < 2) {
     std::cerr << "Usage: shoid <command> <args>\n";
@@ -22,10 +17,9 @@ int main(int argc, char **argv) {
   Args args(argv + 2, argv + argc);
 
   std::map<std::string, std::function<int(Args &)>> commands = {
-      {"generate", generate_keypair_command},
-      {"sign", sign_file_command},
-      {"verify", verify_signature_command},
-      {"version", version_command}
+      {"generate", generate_keypair_command}, {"sign", sign_file_command},
+      {"verify", verify_signature_command},   {"version", version_command},
+      {"start-daemon", start_daemon_command},
   };
 
   auto it = commands.find(command);
