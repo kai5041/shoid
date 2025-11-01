@@ -11,6 +11,7 @@ Sign, verify, and protect your digital presence using both classical and post-qu
 
 ## License
 This project is licensed under the [ShoID License](https://github.com/kai5041/shoid/LICENSE).
+This project uses uWebSockets under the [Apache 2.0 License](./cli/include/shoid/uWebSockets/LICENSE).
 
 ## Contact
 

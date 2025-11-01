@@ -53,6 +53,8 @@ private:
     return (HttpResponseData<SSL> *)Super::getAsyncSocketData();
   }
 
+
+  // Modified by kai5041 on 01/11/2025
   /* Write an unsigned 32-bit integer in hex */
   void writeUnsignedHex(unsigned int value) {
     char buf[32]; // large enough to avoid overflow
@@ -60,6 +62,7 @@ private:
     Super::write(buf, length);
   }
 
+  // Modified by kai5041 on 01/11/2025
   void writeUnsigned64(uint64_t value) {
     char buf[32]; // large enough to avoid overflow
     int length = utils::u64toa(value, buf);
