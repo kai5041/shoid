@@ -18,3 +18,7 @@ This project uses uWebSockets under the [Apache 2.0 License](./cli/include/shoid
 If you have any questions, suggestions, or feedback, please don't hesitate to reach out to me on telegram (https://t.me/kai5041).
 
 Feedback is welcome — it helps 所ID become more secure and reliable.
+
+## Repos
+
+- uWebSockets: https://github.com/uNetworking/uWebSockets

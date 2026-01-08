@@ -5,6 +5,7 @@
 #include <string>
 
 #include <shoid/ed25519.hpp>
+#include <shoid/shoid.hpp>
 
 namespace shoid {
 

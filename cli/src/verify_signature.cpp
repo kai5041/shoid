@@ -12,7 +12,7 @@ namespace shoid {
 // <algorithm> <file> <signature_file> <public_key_file>
 int verify_signature_command(Args &args) {
   if (args.size() != 4) {
-    std::cerr << "Usage: sign <algorithm> <file> <signature_file> "
+    std::cerr << "Usage: verify <algorithm> <file> <signature_file> "
                  "<public_key_file>\n";
     return 1;
   }
